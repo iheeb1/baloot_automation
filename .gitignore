@@ -1,1 +1,46 @@
-./selenium_env
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+
+# ---- Virtual environment ----
+# يمكنك استخدام أي اسم للبيئة الافتراضية
+selenium_env/
+baloot_env/
+venv/
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ---- System files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs ----
+*.log
+
+# ---- Screenshots / debug ----
+final_debug_screenshots/
+debug_screenshots/
+
+# ---- Temporary files ----
+*.tmp
+*.bak
+*.swp
+
+# ---- Node / Frontend (if any) ----
+node_modules/
+
+# ---- Secrets / configs ----
+.env
