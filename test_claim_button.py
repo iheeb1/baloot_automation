@@ -12,14 +12,12 @@ def test_multiple_buttons(screenshot_path,
     Detect 'استلم', 'موافق', and 'عودة' buttons.
     """
     
-    # Define templates and their names
     templates = [
         (claim_template, "استلم", (0, 0, 255), "Claim"),
         (mouwafeq_template, "موافق", (0, 255, 255), "Agree"),
         (back_template, "عودة", (255, 0, 0), "Back")
     ]
     
-    # Load screenshot
     if not os.path.exists(screenshot_path):
         print(f"❌ Error: Screenshot file '{screenshot_path}' not found!")
         return False
@@ -32,16 +30,12 @@ def test_multiple_buttons(screenshot_path,
     print(f"✅ Screenshot loaded successfully: {screenshot_path}")
     print(f"Screenshot size: {screenshot.shape}")
     
-    # Convert to grayscale
     screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
     
-    # Create output image for annotations
     result_img = screenshot.copy()
     
-    # Keep track of found buttons
     found_buttons = []
     
-    # Process each template
     for template_path, label_ar, color, label_en in templates:
         if not os.path.exists(template_path):
             print(f"⚠️  Template not found: {template_path} (skipping)")
@@ -54,28 +48,22 @@ def test_multiple_buttons(screenshot_path,
         
         print(f"✅ Loaded template: {label_ar} ({template_path}) | Size: {template.shape}")
         
-        # Convert to grayscale
         template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
         
-        # Optional: Blur to reduce noise
         screenshot_gray_blur = cv2.GaussianBlur(screenshot_gray, (3, 3), 0)
         template_gray_blur = cv2.GaussianBlur(template_gray, (3, 3), 0)
         
-        # Match template
         result = cv2.matchTemplate(screenshot_gray_blur, template_gray_blur, cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
         
-        # Threshold for match confidence
-        threshold = 0.7  # Adjust based on testing
+        threshold = 0.7 
         if max_val >= threshold:
             h, w = template_gray.shape
             center_x = max_loc[0] + w // 2
             center_y = max_loc[1] + h // 2
             
-            # Draw circle
             cv2.circle(result_img, (center_x, center_y), 30, color, 3)
             
-            # Add text
             coord_text = f"{label_en}: ({center_x}, {center_y})"
             cv2.putText(result_img, coord_text, (center_x - 100, center_y - 50),
                        cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
@@ -95,13 +83,11 @@ def test_multiple_buttons(screenshot_path,
             print(f"   📍 Position: X={center_x}, Y={center_y}")
             print(f"   🎯 Confidence: {max_val:.2f}")
     
-    # If no buttons found
     if not found_buttons:
         print("❌ No buttons detected.")
         print("💡 Tip: Check template images or adjust similarity threshold.")
         return False
     
-    # Save annotated image
     debug_folder = "claim_debug_screenshots"
     if not os.path.exists(debug_folder):
         os.makedirs(debug_folder)

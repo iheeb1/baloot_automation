@@ -13,7 +13,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 import threading
 import argparse
 
-# --- Configuration ---
 BUTTON_TEMPLATES = {
     "CLAIM": "claim_button_template.png",      # استلم
     "AGREE": "mouwafeq_template.png",          # موافق
@@ -26,7 +25,7 @@ ZONE_OF_INTEREST = {
 }
 
 THRESHOLD = 0.7
-DRAG_SPEED = 0.2
+DRAG_SPEED = 0.6
 CLICK_COOLDOWN = 10
 
 
@@ -127,7 +126,6 @@ class BalootSmartAutomation:
 
         start_pt, end_pt = global_points[0], global_points[-1]
 
-        # Perform drag via JS on Unity canvas
         try:
             script = """
             var canvas = document.getElementById('unity-canvas');
@@ -298,7 +296,6 @@ class BalootSmartAutomation:
         print("🤖 Waiting for START command...")
 
         while True:
-            # Repair panel every few seconds
             if self.running or not hasattr(self, '_last_repair') or time.time() - self._last_repair > 5:
                 self.repair_panel_if_needed()
                 self._last_repair = time.time()
@@ -323,12 +320,10 @@ class BalootSmartAutomation:
                     time.sleep(1)
                     continue
 
-                # Perform drag action
                 self.perform_drag()
 
                 current_time = time.time()
 
-                # Handle CLAIM button with cooldown
                 claim_btn = self.detect_button(screenshot_path, "CLAIM")
                 if claim_btn and (current_time - self.last_claim_time) > CLICK_COOLDOWN:
                     print("🎯 Found 'استلم' button! Clicking...")
@@ -336,7 +331,6 @@ class BalootSmartAutomation:
                     self.last_claim_time = current_time
                     time.sleep(1)
 
-                # Check other buttons
                 for btn_name, label in [("AGREE", "موافق"), ("BACK", "عودة")]:
                     btn = self.detect_button(screenshot_path, btn_name)
                     if btn:
@@ -353,11 +347,9 @@ class BalootSmartAutomation:
     def start(self):
         print("🚀 Starting Baloot Automation...")
         
-        # Open correct URL (fixed trailing space)
-        self.driver.get("https://kammelna.com/baloot/")  # <-- Removed extra spaces
+        self.driver.get("https://kammelna.com/baloot/")
 
         try:
-            # Wait for canvas to ensure Unity loaded
             self.canvas = WebDriverWait(self.driver, 30).until(
                 EC.presence_of_element_located((By.ID, "unity-canvas"))
             )
@@ -366,12 +358,10 @@ class BalootSmartAutomation:
             print("❌ Canvas not found:", e)
             return
 
-        # Inject panel after page loads
         print("🔧 Injecting control panel...")
         self.create_control_panel()
         time.sleep(1)
 
-        # Run automation loop in background
         thread = threading.Thread(target=self.run_automation, daemon=True)
         thread.start()
 
