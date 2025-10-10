@@ -500,7 +500,7 @@ Output:
     )
     
     parser.add_argument("screenshot", help="Path to screenshot image")
-    parser.add_argument("--threshold", type=float, default=0.7,
+    parser.add_argument("--threshold", type=float, default=0.5,
                        help="Template matching threshold (0.0-1.0, default: 0.7)")
     
     args = parser.parse_args()
